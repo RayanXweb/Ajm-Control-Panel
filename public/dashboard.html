@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard</title>
+
+<style>
+body {
+  margin:0;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+  background:#020617;
+  color:white;
+  font-family:sans-serif;
+}
+
+.timer {
+  font-size:90px;
+  color:#0ea5e9;
+}
+</style>
+</head>
+<body>
+
+<div class="timer" id="timer"></div>
+
+<script>
+const TOTAL = 60 * 60; // 60 menit
+
+// ambil waktu awal
+let start = localStorage.getItem("startTime");
+
+if (!start) {
+  start = Date.now();
+  localStorage.setItem("startTime", start);
+}
+
+function update() {
+  const now = Date.now();
+  const diff = Math.floor((now - start) / 1000);
+  let remaining = TOTAL - diff;
+
+  if (remaining < 0) remaining = 0;
+
+  let m = Math.floor(remaining / 60);
+  let s = remaining % 60;
+
+  document.getElementById("timer").innerText =
+    `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+
+  if (remaining === 0) {
+    document.getElementById("timer").innerText = "SELESAI";
+    localStorage.removeItem("startTime");
+  }
+}
+
+setInterval(update, 1000);
+update();
+
+// fullscreen paksa
+document.documentElement.requestFullscreen().catch(()=>{});
+
+// blok tombol
+document.addEventListener("keydown", e => {
+  if (e.key === "F5" || (e.ctrlKey && e.key === "r")) e.preventDefault();
+});
+
+// blok back
+history.pushState(null,null,location.href);
+window.onpopstate = () => history.go(1);
+
+// warning keluar
+window.onbeforeunload = () => "Tidak bisa keluar!";
+</script>
+
+</body>
+</html>
